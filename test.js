@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 // Set up Websocket endpoint
 
-const url = "localhost:8000";
+const url = "localhost:8080";
 
 // Establish Websocket connection
 

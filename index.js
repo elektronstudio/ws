@@ -16,7 +16,7 @@ app.get("/messages", (req, res) => res.json(messages));
 
 const server = createServer(async (req, res) => {
   await app.handler(req, res);
-}).listen(8000);
+}).listen(8080);
 
 // Set up Websocket server
 
