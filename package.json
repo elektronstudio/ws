@@ -2,6 +2,9 @@
   "name": "ws2",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=14.0"
+  },
   "dependencies": {
     "@tinyhttp/app": "^1.1.12",
     "node-fetch": "^2.6.1",
