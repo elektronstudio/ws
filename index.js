@@ -1,5 +1,6 @@
 import { createServer } from "http";
 import { App } from "@tinyhttp/app";
+import { cors } from "@tinyhttp/cors";
 import WebSocket from "ws";
 import redis from "redis";
 
@@ -11,7 +12,7 @@ const messagesMaxLength = 100000;
 // Set up HTTP server
 
 const app = new App();
-
+app.use(cors({ origin: true }));
 app.get("/messages", (req, res) => res.json(messages));
 
 const server = createServer(async (req, res) => {
