@@ -49,7 +49,7 @@ if (process.env.REDIS_URL) {
 
   subscriber.on("message", (channel, message) => {
     if (channel === redisChannel) {
-      saveMessage(message);
+      messageHistory(message);
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(message);
@@ -62,7 +62,7 @@ if (process.env.REDIS_URL) {
 
   wss.on("connection", (ws) => {
     ws.on("message", (message) => {
-      saveMessage(message);
+      messageHistory(message);
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(message);
@@ -74,9 +74,9 @@ if (process.env.REDIS_URL) {
 
 // Utility functions
 
-const saveMessage = (message) => {
+const messageHistory = (message) => {
   const parsedMessage = safeJsonParse(message);
-  if (parsedMessage?.save) {
+  if (parsedMessage?.history) {
     if (history.length >= historyMaxLength) {
       history.shift();
     }
