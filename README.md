@@ -2,16 +2,16 @@
 
 Websocket broadcaster with optional Redis support
 
-## Usage
+## Local devlopment
 
-### Use locally
+### Without Redis
 
 ```
 npm i
 node .
 ```
 
-### Use locally with Redis
+### With Redis
 
 See installation instructions: https://gist.github.com/tomysmile/1b8a321e7c58499ef9f9441b2faa0aa8
 
@@ -27,8 +27,19 @@ npm i
 REDIS_URL=redis://localhost:6379 node .
 ```
 
-### Testing locally
+### Testing
 
 ```
 node test
 ```
+
+## Deploying
+
+Depoly the project as DigitalOcean App
+
+## Scaling
+
+1. Set up a Redis database in DigitalOcean
+2. Add Redis database as app component
+3. Rename `DATABASE_URL` to `REDIS_URL` in app env settings
+4. Add more app instances as needed
