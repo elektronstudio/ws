@@ -1,13 +1,17 @@
-### Usage
+## About
 
-#### Use locally
+Websocket broadcaster with optional Redis support
+
+## Usage
+
+### Use locally
 
 ```
 npm i
 node .
 ```
 
-#### Use locally with Redis
+### Use locally with Redis
 
 See installation instructions: https://gist.github.com/tomysmile/1b8a321e7c58499ef9f9441b2faa0aa8
 
@@ -21,4 +25,10 @@ Then
 ```
 npm i
 REDIS_URL=redis://localhost:6379 node .
+```
+
+### Testing locally
+
+```
+node test
 ```
