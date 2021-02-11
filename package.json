@@ -1,0 +1,10 @@
+{
+  "name": "ws2",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tinyhttp/app": "^1.1.12",
+    "redis": "^3.0.2",
+    "ws": "^7.4.3"
+  }
+}
