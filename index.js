@@ -6,14 +6,14 @@ import redis from "redis";
 
 // Set up message storage
 
-const messages = [];
-const messagesMaxLength = 100000;
+const history = [];
+const historyMaxLength = 100000;
 
 // Set up HTTP server
 
 const app = new App();
 app.use(cors({ origin: true }));
-app.get("/messages", (req, res) => res.json(messages));
+app.get("/history", (req, res) => res.json(history));
 
 const server = createServer(async (req, res) => {
   await app.handler(req, res);
@@ -77,10 +77,10 @@ if (process.env.REDIS_URL) {
 const saveMessage = (message) => {
   const parsedMessage = safeJsonParse(message);
   if (parsedMessage?.save) {
-    if (messages.length >= messagesMaxLength) {
-      messages.shift();
+    if (history.length >= historyMaxLength) {
+      history.shift();
     }
-    messages.push(parsedMessage);
+    history.push(parsedMessage);
   }
 };
 

@@ -20,7 +20,7 @@ ws.on("open", () => {
   ws.send(createMessage({ type: "CHAT", save: true }));
   ws.send(createMessage({ type: "USER" }));
   // Get history
-  fetch(`${url}/messages`)
+  fetch(`${url}/history`)
     .then((res) => res.json())
     .then((res) => console.log(res));
 });
