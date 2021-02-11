@@ -1,12 +1,13 @@
 import Websocket from "ws";
+import fetch from "node-fetch";
 
 // Set up Websocket endpoint
 
-const url = "ws://localhost:8000";
+const url = "localhost:8000";
 
 // Establish Websocket connection
 
-const ws = new Websocket(url);
+const ws = new Websocket(`ws://${url}`);
 
 ws.on("open", () => {
   // Output incoming message
@@ -16,6 +17,10 @@ ws.on("open", () => {
   // Send test messages
   ws.send(createMessage({ type: "CHAT", save: true }));
   ws.send(createMessage({ type: "USER" }));
+  // Get history
+  fetch(`http://${url}/messages`)
+    .then((res) => res.json())
+    .then((res) => console.log(res));
 });
 
 const createMessage = (message) => {

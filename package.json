@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@tinyhttp/app": "^1.1.12",
+    "node-fetch": "^2.6.1",
     "redis": "^3.0.2",
     "ws": "^7.4.3"
   }
