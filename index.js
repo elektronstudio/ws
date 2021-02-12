@@ -13,6 +13,10 @@ const historyMaxLength = 100000;
 
 const app = new App();
 app.use(cors({ origin: true }));
+app.get("/history/clear", (req, res) => {
+  history = [];
+  res.json(history);
+});
 app.get("/history", (req, res) => res.json(history));
 
 const server = createServer(async (req, res) => {
