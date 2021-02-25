@@ -6,7 +6,7 @@ import redis from "redis";
 
 // Set up message storage
 
-const history = [];
+let history = [];
 const historyMaxLength = 100000;
 
 // Set up HTTP server
