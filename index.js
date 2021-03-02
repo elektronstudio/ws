@@ -27,11 +27,11 @@ const server = createServer(async (req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
-if (process.env.REDIS_URL) {
+if (process.env.DATABASE_URL) {
   console.log("Set up Redis-based multinode broadcaster");
 
   const redisChannel = "ws";
-  const redisUrl = process.env.REDIS_URL;
+  const redisUrl = process.env.DATABASE_URL;
 
   const subscriber = redis.createClient({
     url: redisUrl,
