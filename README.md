@@ -24,7 +24,7 @@ Then
 
 ```
 npm i
-REDIS_URL=redis://localhost:6379 node .
+DATABASE_URL=redis://localhost:6379 node .
 ```
 
 ### Testing
@@ -41,5 +41,4 @@ Depoly the project as DigitalOcean App
 
 1. Set up a Redis database in DigitalOcean
 2. Add Redis database as app component
-3. Rename `DATABASE_URL` to `REDIS_URL` in app env settings
-4. Add more app instances as needed
+3. Add more app instances as needed
