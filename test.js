@@ -1,9 +1,9 @@
-import Websocket from "ws";
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
+import Websocket from 'ws';
 
 // Set up Websocket endpoint
 
-const url = process.argv[2] ?? "http://localhost:8080";
+const url = process.env.WS_URL ?? "http://localhost:8080";
 
 // Establish Websocket connection
 
@@ -20,9 +20,10 @@ ws.on("open", () => {
   ws.send(createMessage({ type: "CHAT", save: true }));
   ws.send(createMessage({ type: "USER" }));
   // Get history
-  fetch(`${url}/history`)
+  fetch(`${url}/messages?secret=${process.env.SECRET}`)
     .then((res) => res.json())
-    .then((res) => console.log(res));
+    .then((res) => console.log(res))
+    .catch((e) => console.log(e));
 });
 
 const createMessage = (message) => {

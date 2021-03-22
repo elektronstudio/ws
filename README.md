@@ -1,17 +1,8 @@
 ## About
 
-Websocket broadcaster with optional Redis support
+Websocket broadcaster based on Redis
 
-## Local devlopment
-
-### Without Redis
-
-```
-npm i
-node .
-```
-
-### With Redis
+## Local development
 
 See installation instructions: https://gist.github.com/tomysmile/1b8a321e7c58499ef9f9441b2faa0aa8
 
@@ -24,7 +15,7 @@ Then
 
 ```
 npm i
-DATABASE_URL=redis://localhost:6379 node .
+DATABASE_URL=redis://localhost:6379 SECRET=secret node .
 ```
 
 ### Testing
