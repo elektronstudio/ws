@@ -1,23 +1,52 @@
-import { createServer } from "http";
-import { App } from "@tinyhttp/app";
-import { cors } from "@tinyhttp/cors";
-import WebSocket from "ws";
-import redis from "redis";
+import { createServer } from 'http';
+import Redis from 'ioredis';
+import { exit } from 'process';
+import WebSocket from 'ws';
 
-// Set up message storage
+import { App } from '@tinyhttp/app';
+import { cors } from '@tinyhttp/cors';
 
-let history = [];
-const historyMaxLength = 100000;
+if (!process.env.DATABASE_URL || !process.env.SECRET) {
+  console.log(
+    "Usage: \u001b[32mDATABASE_URL=redis://localhost:6379 SECRET=secret node .\u001b[0m"
+  );
+  exit();
+}
+
+const dbUrl = process.env.DATABASE_URL;
+const secret = process.env.SECRET;
+const pubsubChannel = "ws";
+const messagesList = "messages";
+
+const redis = new Redis(dbUrl);
+const subscriber = new Redis(dbUrl);
+const publisher = new Redis(dbUrl);
 
 // Set up HTTP server
 
 const app = new App();
 app.use(cors({ origin: true }));
-app.get("/history/clear", (req, res) => {
-  history = [];
-  res.json(history);
+
+const hasSecret = (req) =>
+  secret && req.query && req.query.secret && req.query.secret === secret;
+
+app.get("/messages/clear", async (req, res) => {
+  if (hasSecret(req)) {
+    await redis.del(messagesList);
+    res.json([]);
+  } else {
+    res.status(403).send("No access");
+  }
 });
-app.get("/history", (req, res) => res.json(history));
+
+app.get("/messages", async (req, res) => {
+  if (hasSecret(req)) {
+    const messages = await redis.lrange(messagesList, 0, -1);
+    res.json(messages.map(safeJsonParse));
+  } else {
+    res.status(403).send("No access");
+  }
+});
 
 const server = createServer(async (req, res) => {
   await app.handler(req, res);
@@ -27,66 +56,31 @@ const server = createServer(async (req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
-if (process.env.DATABASE_URL) {
-  console.log("Set up Redis-based multinode broadcaster");
+// Set up publisher
 
-  const redisChannel = "ws";
-  const redisUrl = process.env.DATABASE_URL;
-
-  const subscriber = redis.createClient({
-    url: redisUrl,
-  });
-
-  subscriber.subscribe(redisChannel);
-
-  const publisher = subscriber.duplicate();
-
-  // Set up publisher
-
-  wss.on("connection", (ws) => {
-    ws.on("message", (message) => {
-      publisher.publish(redisChannel, message);
-    });
-  });
-
-  // Set up subscriber
-
-  subscriber.on("message", (channel, message) => {
-    if (channel === redisChannel) {
-      messageHistory(message);
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(message);
-        }
-      });
+wss.on("connection", (ws) => {
+  ws.on("message", (message) => {
+    publisher.publish(pubsubChannel, message);
+    const parsedMessage = safeJsonParse(message);
+    if (parsedMessage?.store) {
+      redis.rpush(messagesList, message);
     }
   });
-} else {
-  console.log("Setting up single node websocket broadcaster");
+});
 
-  wss.on("connection", (ws) => {
-    ws.on("message", (message) => {
-      messageHistory(message);
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(message);
-        }
-      });
+// Set up subscriber
+
+subscriber.subscribe(pubsubChannel);
+
+subscriber.on("message", (channel, message) => {
+  if (channel === pubsubChannel) {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
     });
-  });
-}
-
-// Utility functions
-
-const messageHistory = (message) => {
-  const parsedMessage = safeJsonParse(message);
-  if (parsedMessage?.history) {
-    if (history.length >= historyMaxLength) {
-      history.shift();
-    }
-    history.push(parsedMessage);
   }
-};
+});
 
 const safeJsonParse = (str) => {
   try {
