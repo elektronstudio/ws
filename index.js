@@ -95,7 +95,25 @@ import got from "got";
 const statsUrl = process.env.STATS_URL;
 const statsApikey = process.env.STATS_APIKEY;
 
-if (statsUrl && statsApikey) {
+const createMessage = (message) => {
+  const id = "abcdefghijklmnopqrstuvwxyz"
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 16)
+    .join("");
+  return JSON.stringify({
+    id,
+    datetime: new Date().toISOString(),
+    type: "",
+    channel: "",
+    userId: "",
+    userName: "",
+    value: "",
+    ...message,
+  });
+};
+
+const sendStats = () => {
   got
     .get(statsUrl, {
       headers: {
@@ -103,5 +121,20 @@ if (statsUrl && statsApikey) {
       },
       responseType: "json",
     })
-    .then((res) => console.log(res.body));
+    .then((res) => {
+      const message = createMessage({
+        type: "STATS",
+        value: res.body,
+      });
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+    });
+};
+
+if (statsUrl && statsApikey) {
+  sendStats();
+  setInterval(sendStats, 30 * 1000);
 }
