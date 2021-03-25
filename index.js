@@ -1,10 +1,10 @@
-import { createServer } from 'http';
-import Redis from 'ioredis';
-import { exit } from 'process';
-import WebSocket from 'ws';
+import { createServer } from "http";
+import Redis from "ioredis";
+import { exit } from "process";
+import WebSocket from "ws";
 
-import { App } from '@tinyhttp/app';
-import { cors } from '@tinyhttp/cors';
+import { App } from "@tinyhttp/app";
+import { cors } from "@tinyhttp/cors";
 
 if (!process.env.DATABASE_URL || !process.env.SECRET) {
   console.log(
@@ -89,3 +89,19 @@ const safeJsonParse = (str) => {
     return str;
   }
 };
+
+import got from "got";
+
+const statsUrl = process.env.STATS_URL;
+const statsApikey = process.env.STATS_APIKEY;
+
+if (statsUrl && statsApikey) {
+  got
+    .get(statsUrl, {
+      headers: {
+        "x-api-key": statsApikey,
+      },
+      responseType: "json",
+    })
+    .then((res) => console.log(res.body));
+}

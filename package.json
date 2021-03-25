@@ -8,6 +8,7 @@
   "dependencies": {
     "@tinyhttp/app": "^1.1.12",
     "@tinyhttp/cors": "^1.1.5",
+    "got": "^11.8.2",
     "ioredis": "^4.24.3",
     "node-fetch": "^2.6.1",
     "ws": "^7.4.3"
