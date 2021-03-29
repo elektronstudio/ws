@@ -2,6 +2,7 @@ import { createServer } from "http";
 import Redis from "ioredis";
 import { exit } from "process";
 import WebSocket from "ws";
+import got from "got";
 
 import { App } from "@tinyhttp/app";
 import { cors } from "@tinyhttp/cors";
@@ -89,8 +90,6 @@ const safeJsonParse = (str) => {
     return str;
   }
 };
-
-import got from "got";
 
 const statsUrl = process.env.STATS_URL;
 const statsApikey = process.env.STATS_APIKEY;
