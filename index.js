@@ -1,10 +1,11 @@
-import { createServer } from 'http';
-import Redis from 'ioredis';
-import { exit } from 'process';
-import WebSocket from 'ws';
+import { createServer } from "http";
+import Redis from "ioredis";
+import { exit } from "process";
+import WebSocket from "ws";
+import got from "got";
 
-import { App } from '@tinyhttp/app';
-import { cors } from '@tinyhttp/cors';
+import { App } from "@tinyhttp/app";
+import { cors } from "@tinyhttp/cors";
 
 if (!process.env.DATABASE_URL || !process.env.SECRET) {
   console.log(
@@ -89,3 +90,48 @@ const safeJsonParse = (str) => {
     return str;
   }
 };
+
+const statsUrl = process.env.STATS_URL;
+const statsApikey = process.env.STATS_APIKEY;
+
+const createMessage = (message) => {
+  const id = "abcdefghijklmnopqrstuvwxyz"
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 16)
+    .join("");
+  return JSON.stringify({
+    id,
+    datetime: new Date().toISOString(),
+    type: "",
+    channel: "",
+    userId: "",
+    userName: "",
+    value: "",
+    ...message,
+  });
+};
+
+const sendStats = () => {
+  got
+    .get(statsUrl, {
+      headers: {
+        "x-api-key": statsApikey,
+      },
+      responseType: "json",
+    })
+    .then((res) => {
+      if (res.body?.length) {
+        const message = createMessage({
+          type: "STATS",
+          value: res.body,
+        });
+        publisher.publish(pubsubChannel, message);
+      }
+    });
+};
+
+if (statsUrl && statsApikey) {
+  sendStats();
+  setInterval(sendStats, 30 * 1000);
+}
