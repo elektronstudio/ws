@@ -121,13 +121,13 @@ const sendStats = () => {
       responseType: "json",
     })
     .then((res) => {
-      console.log(res.body);
       if (res.body?.length) {
         const message = createMessage({
           type: "STATS",
           value: res.body,
         });
         publisher.publish(pubsubChannel, message);
+        console.log(res.body);
       }
     });
 };
