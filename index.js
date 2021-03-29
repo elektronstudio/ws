@@ -122,15 +122,13 @@ const sendStats = () => {
       responseType: "json",
     })
     .then((res) => {
-      const message = createMessage({
-        type: "STATS",
-        value: res.body,
-      });
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(message);
-        }
-      });
+      if (res.body?.length) {
+        const message = createMessage({
+          type: "STATS",
+          value: res.body,
+        });
+        publisher.publish(pubsubChannel, message);
+      }
     });
 };
 

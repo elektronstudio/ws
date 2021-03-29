@@ -21,7 +21,7 @@ DATABASE_URL=redis://localhost:6379 SECRET=secret node .
 ### Testing
 
 ```
-node test
+SECRET=secret node test
 ```
 
 ## Deploying
