@@ -159,7 +159,10 @@ const sendStats = () => {
         const message = createMessage({
           type: "STATS",
           value: res.body,
+          channel: "elektron",
+          store: true,
         });
+        redis.rpush(messagesList, message);
         publisher.publish(pubsubChannel, message);
         console.log(res.body);
       }
